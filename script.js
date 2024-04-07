@@ -137,22 +137,40 @@ async function getNasaPictures() {
   }
 }
 
+function showSaveConfirmation() {
+  saveConfirmed.hidden = false; // Show save confirmation message
+  setTimeout(() => {
+    saveConfirmed.hidden = true;
+  }, 2000);
+}
+
+function showRemoveConfirmation() {
+  removeConfirmed.hidden = false; // Show remove confirmation message
+  setTimeout(() => {
+    removeConfirmed.hidden = true;
+  }, 2000);
+}
+
 // Add result to Favorites
 function saveFavorite(itemUrl) {
   // Loop through Results Array to select Favorite
   resultsArray.forEach((item) => {
-    if (item.url.includes(itemUrl) && !favorites[itemUrl]) {
-      favorites[itemUrl] = item;
+    if (item.url.includes(itemUrl)) {
+      if (!favorites[itemUrl]) {
+        favorites[itemUrl] = item;
+        showSaveConfirmation(); // Show save confirmation message
+      } else {
+        delete favorites[itemUrl];
+        showRemoveConfirmation(); // Show remove confirmation message
+      }
       const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
       if (iconElement) {
-        iconElement.className = 'fas fa-heart clickable'; // Change to filled heart
-        iconElement.title = 'Remove from Favorites'; // Update title
+        iconElement.classList.toggle('far'); // Toggle outlined heart
+        iconElement.classList.toggle('fas'); // Toggle filled heart
+        iconElement.title = favorites[itemUrl]
+          ? 'Remove from Favorites'
+          : 'Add to Favorites'; // Update title
       }
-      // Show Save Confirmation for 2 Seconds
-      saveConfirmed.hidden = false;
-      setTimeout(() => {
-        saveConfirmed.hidden = true;
-      }, 2000);
       // Set Favorites in localStorage
       localStorage.setItem('nasaFavorites', JSON.stringify(favorites));
     }
@@ -165,14 +183,10 @@ function removeFavorite(itemUrl) {
     delete favorites[itemUrl];
     const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
     if (iconElement) {
-      iconElement.className = 'far fa-heart clickable'; // Change to outlined heart
+      iconElement.classList.replace('fas', 'far'); // Change to outlined heart
       iconElement.title = 'Add to Favorites'; // Update title
     }
-    // Show Remove Confirmation for 2 Seconds
-    removeConfirmed.hidden = false;
-    setTimeout(() => {
-      removeConfirmed.hidden = true;
-    }, 2000);
+    showRemoveConfirmation(); // Show remove confirmation message
     // Set Favorites in localStorage
     localStorage.setItem('nasaFavorites', JSON.stringify(favorites));
     updateDOM('favorites');
@@ -180,4 +194,4 @@ function removeFavorite(itemUrl) {
 }
 
 // On Load
-// getNasaPictures();
+getNasaPictures();
