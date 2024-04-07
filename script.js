@@ -1,7 +1,3 @@
-// TODO:
-// * move copyright to the right
-// * fix videos not loading:
-
 const resultsNav = document.getElementById('resultsNav');
 const favoritesNav = document.getElementById('favoritesNav');
 const imagesContainer = document.querySelector('.images-container');
@@ -38,17 +34,31 @@ function createDOMNodes(page) {
     // Card Container
     const card = document.createElement('div');
     card.classList.add('card');
-    // Link
-    const link = document.createElement('a');
-    link.href = result.hdurl;
-    link.title = 'View Full Image';
-    link.target = '_blank';
-    // Image
-    const image = document.createElement('img');
-    image.src = result.url;
-    image.alt = 'NASA Picture of the Day';
-    image.loading = 'lazy';
-    image.classList.add('card-img-top');
+
+    let mediaContainer;
+    if (result.media_type === 'image') {
+      mediaContainer = document.createElement('a');
+      mediaContainer.href = result.hdurl;
+      mediaContainer.title = 'View Full Image';
+      mediaContainer.target = '_blank';
+
+      const image = document.createElement('img');
+      image.src = result.url;
+      image.alt = 'NASA Picture of the Day';
+      image.loading = 'lazy';
+      image.classList.add('card-img-top');
+      mediaContainer.appendChild(image);
+    } else if (result.media_type === 'video') {
+      mediaContainer = document.createElement('iframe');
+      mediaContainer.src = result.url;
+      mediaContainer.title = 'NASA Video of the Day';
+      mediaContainer.classList.add('card-img-top');
+      mediaContainer.classList.add('video-frame');
+      mediaContainer.style.border = 'none';
+      mediaContainer.style.width = '100%';
+      mediaContainer.style.height = '500px';
+    }
+
     // Card Body
     const cardBody = document.createElement('div');
     cardBody.classList.add('card-body');
@@ -93,8 +103,8 @@ function createDOMNodes(page) {
     titleAndIconContainer.append(cardTitle, saveText);
 
     cardBody.append(titleAndIconContainer, cardText, footer);
-    link.appendChild(image);
-    card.append(link, cardBody);
+
+    card.append(mediaContainer, cardBody);
     imagesContainer.appendChild(card);
   });
 }
