@@ -1,4 +1,6 @@
 :root {
+  --primary-main-color: rgba(60, 179, 113, 1);
+  --secondary-main-color: rgb(44, 134, 84);
   --background-color: whitesmoke;
 }
 
@@ -29,6 +31,8 @@ body {
   background: var(--background-color);
   height: 100vh;
   width: 100vw;
+  position: fixed;
+  z-index: 10;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,6 +55,17 @@ body {
   right: 0;
   width: 100%;
   height: 60px;
+  z-index: -1;
+}
+
+.clickable {
+  color: var(--primary-main-color);
+  cursor: pointer;
+  user-select: none;
+}
+
+.clickable:hover {
+  color: var(--secondary-main-color);
 }
 
 /* Images Container */
