@@ -108,6 +108,26 @@ body {
   font-size: 24px;
 }
 
+.fa-heart {
+  color: red;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.fa-heart:hover {
+  transform: scale(1.2);
+}
+
+.fa-heart.clickable:hover {
+  color: red;
+}
+
+.text-muted {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
 /* Save Confirmation */
 .save-confirmed,
 .remove-confirmed {
@@ -126,20 +146,6 @@ body {
   display: none;
 }
 
-.fa-heart {
-  color: red;
-  font-size: 28px;
-  cursor: pointer;
-}
-
-.fa-heart:hover {
-  transform: scale(1.2);
-}
-
-.fa-heart.clickable:hover {
-  color: red;
-}
-
 /* Large Smartphone (Vertical) */
 @media screen and (max-width: 800px) {
   body {
@@ -153,7 +159,7 @@ body {
   }
 
   .card-title {
-    font-size: 20px;
+    font-size: 15px;
   }
 
   .save-confirmed,
