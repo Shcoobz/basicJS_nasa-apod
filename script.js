@@ -52,20 +52,28 @@ function createDOMNodes(page) {
     // Card Body
     const cardBody = document.createElement('div');
     cardBody.classList.add('card-body');
+
+    // Flex container for title and icon
+    const titleAndIconContainer = document.createElement('div');
+    titleAndIconContainer.classList.add('title-icon-container');
+
     // Card Title
     const cardTitle = document.createElement('h5');
     cardTitle.classList.add('card-title');
     cardTitle.textContent = result.title;
-    // Save Text
-    const saveText = document.createElement('p');
+
+    // Save Text (Heart Icon)
+    const saveText = document.createElement('span');
     saveText.classList.add('clickable');
     if (page === 'results') {
-      saveText.textContent = 'Add To Favorites';
-      saveText.setAttribute('onclick', `saveFavorite('${result.url}')`);
+      saveText.innerHTML = `<i class="far fa-heart clickable" data-url="${result.url}" title="Add to Favorites"></i>`;
     } else {
-      saveText.textContent = 'Remove Favorite';
-      saveText.setAttribute('onclick', `removeFavorite('${result.url}')`);
+      saveText.innerHTML = `<i class="fas fa-heart clickable" data-url="${result.url}" title="Remove from Favorites"></i>`;
     }
+    saveText.onclick = () => {
+      page === 'results' ? saveFavorite(result.url) : removeFavorite(result.url);
+    };
+
     // Card Text
     const cardText = document.createElement('p');
     cardText.textContent = result.explanation;
@@ -82,7 +90,9 @@ function createDOMNodes(page) {
 
     // Append
     footer.append(date, copyright);
-    cardBody.append(cardTitle, saveText, cardText, footer);
+    titleAndIconContainer.append(cardTitle, saveText);
+
+    cardBody.append(titleAndIconContainer, cardText, footer);
     link.appendChild(image);
     card.append(link, cardBody);
     imagesContainer.appendChild(card);
@@ -123,6 +133,11 @@ function saveFavorite(itemUrl) {
   resultsArray.forEach((item) => {
     if (item.url.includes(itemUrl) && !favorites[itemUrl]) {
       favorites[itemUrl] = item;
+      const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
+      if (iconElement) {
+        iconElement.className = 'fas fa-heart clickable'; // Change to filled heart
+        iconElement.title = 'Remove from Favorites'; // Update title
+      }
       // Show Save Confirmation for 2 Seconds
       saveConfirmed.hidden = false;
       setTimeout(() => {
@@ -138,6 +153,11 @@ function saveFavorite(itemUrl) {
 function removeFavorite(itemUrl) {
   if (favorites[itemUrl]) {
     delete favorites[itemUrl];
+    const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
+    if (iconElement) {
+      iconElement.className = 'far fa-heart clickable'; // Change to outlined heart
+      iconElement.title = 'Add to Favorites'; // Update title
+    }
     // Show Remove Confirmation for 2 Seconds
     removeConfirmed.hidden = false;
     setTimeout(() => {

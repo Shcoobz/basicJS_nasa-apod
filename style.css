@@ -96,7 +96,14 @@ body {
   padding: 20px;
 }
 
+.title-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .card-title {
+  width: 100%;
   margin: 10px auto;
   font-size: 24px;
 }
@@ -117,6 +124,20 @@ body {
 /* Hidden */
 .hidden {
   display: none;
+}
+
+.fa-heart {
+  color: red;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.fa-heart:hover {
+  transform: scale(1.2);
+}
+
+.fa-heart.clickable:hover {
+  color: red;
 }
 
 /* Large Smartphone (Vertical) */
