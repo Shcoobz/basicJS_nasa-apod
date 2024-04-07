@@ -102,7 +102,8 @@ body {
 }
 
 /* Save Confirmation */
-.save-confirmed {
+.save-confirmed,
+.remove-confirmed {
   background: white;
   padding: 8px 16px;
   border-radius: 5px;
@@ -134,7 +135,8 @@ body {
     font-size: 20px;
   }
 
-  .save-confirmed {
+  .save-confirmed,
+  .remove-confirmed {
     right: 25px;
   }
 }

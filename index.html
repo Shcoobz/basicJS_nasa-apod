@@ -19,13 +19,13 @@
         <span class="background"></span>
         <!-- Results Nav -->
         <span class="navigation-items" id="resultsNav">
-          <h3 class="clickable">Favorites</h3>
+          <h3 class="clickable" onclick="updateDOM('favorites')">Favorites</h3>
           <h3>&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</h3>
-          <h3 class="clickable">Load More</h3>
+          <h3 class="clickable" onclick="getNasaPictures()">Load More</h3>
         </span>
         <!-- Favorites Nav -->
         <span class="naviagtion-items hidden" id="favoritesNav">
-          <h3 class="clickable">Load More NASA Images</h3>
+          <h3 class="clickable" onclick="getNasaPictures()">Load More NASA Images</h3>
         </span>
       </div>
       <!-- Images Container -->
@@ -34,6 +34,10 @@
     <!-- Save Confirmation -->
     <div class="save-confirmed" hidden>
       <h1>ADDED!</h1>
+    </div>
+    <!-- Remove Confirmation -->
+    <div class="remove-confirmed" hidden>
+      <h1>REMOVED!</h1>
     </div>
     <!-- Script -->
     <script src="script.js"></script>
