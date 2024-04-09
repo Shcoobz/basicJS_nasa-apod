@@ -17,8 +17,9 @@ const DOM = {
 const NASA_API = {
   count: RESULTS_COUNT,
   apiKey: 'DEMO_KEY',
-  apiUrl: `https://api.nasa.gov/planetary/apod?api_key=${NASA_API.apiKey}&count=${RESULTS_COUNT}`,
 };
+
+NASA_API.apiUrl = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API.apiKey}&count=${NASA_API.count}`;
 
 function showContent(page) {
   window.scrollTo({ top: 0, behavior: 'instant' });
