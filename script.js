@@ -1,30 +1,28 @@
-const resultsNav = document.getElementById('resultsNav');
-const favoritesNav = document.getElementById('favoritesNav');
-const imagesContainer = document.querySelector('.images-container');
-const saveConfirmed = document.querySelector('.save-confirmed');
-const removeConfirmed = document.querySelector('.remove-confirmed');
-const loader = document.querySelector('.loader');
+// DOM Elements Object
+const DOM = {
+  resultsNav: document.getElementById('resultsNav'),
+  favoritesNav: document.getElementById('favoritesNav'),
+  imagesContainer: document.querySelector('.images-container'),
+  saveConfirmed: document.querySelector('.save-confirmed'),
+  removeConfirmed: document.querySelector('.remove-confirmed'),
+  loader: document.querySelector('.loader'),
+};
 
-// NASA API
-const count = 10;
-const apiKey = 'DEMO_KEY';
-const apiUrl = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&count=${count}`;
+// NASA API Configurations
+const NASA_API = {
+  count: 10,
+  apiKey: 'DEMO_KEY',
+  apiUrl: `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&count=10`,
+};
 
 let resultsArray = [];
 let favorites = {};
 
 function showContent(page) {
   window.scrollTo({ top: 0, behavior: 'instant' });
-
-  if (page === 'results') {
-    resultsNav.classList.remove('hidden');
-    favoritesNav.classList.add('hidden');
-  } else {
-    resultsNav.classList.add('hidden');
-    favoritesNav.classList.remove('hidden');
-  }
-
-  loader.classList.add('hidden');
+  DOM.resultsNav.classList.toggle('hidden', page !== 'results');
+  DOM.favoritesNav.classList.toggle('hidden', page === 'results');
+  DOM.loader.classList.add('hidden');
 }
 
 function createMediaContainer(result) {
@@ -94,7 +92,7 @@ function createCardBody(result, page) {
 
 function appendCardElements(card, mediaContainer, cardBody) {
   card.append(mediaContainer, cardBody);
-  imagesContainer.appendChild(card);
+  DOM.imagesContainer.appendChild(card);
 }
 
 function createDOMNodes(page) {
@@ -111,21 +109,18 @@ function createDOMNodes(page) {
   });
 }
 
-//
 function updateDOM(page) {
-  // Get Favorites from LocalStorage
   if (localStorage.getItem('nasaFavorites')) {
     favorites = JSON.parse(localStorage.getItem('nasaFavorites'));
   }
 
-  imagesContainer.textContent = '';
+  DOM.imagesContainer.textContent = '';
 
-  // Check if updating 'favorites' page and favorites is empty
   if (page === 'favorites' && Object.keys(favorites).length === 0) {
     const noFavoritesMessage = document.createElement('p');
     noFavoritesMessage.textContent = 'No favorites yet!';
     noFavoritesMessage.classList.add('no-favorites-message');
-    imagesContainer.appendChild(noFavoritesMessage);
+    DOM.imagesContainer.appendChild(noFavoritesMessage);
   } else {
     createDOMNodes(page);
   }
@@ -133,33 +128,43 @@ function updateDOM(page) {
   showContent(page);
 }
 
-// Get 10 Images from NASA API
 async function getNasaPictures() {
-  // Show Loader
-  loader.classList.remove('hidden');
+  DOM.loader.classList.remove('hidden');
 
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch(NASA_API.apiUrl);
     resultsArray = await response.json();
     updateDOM('results');
   } catch (error) {
-    // Catch Error Here
     console.log(error);
   }
 }
 
-function showSaveConfirmation() {
-  saveConfirmed.hidden = false;
+function showConfirmation(confirmationElement) {
+  confirmationElement.hidden = false;
   setTimeout(() => {
-    saveConfirmed.hidden = true;
+    confirmationElement.hidden = true;
   }, 2000);
 }
 
-function showRemoveConfirmation() {
-  removeConfirmed.hidden = false;
-  setTimeout(() => {
-    removeConfirmed.hidden = true;
-  }, 2000);
+function manageFavorites(itemUrl, isAdding) {
+  const item =
+    resultsArray.find((item) => item.url.includes(itemUrl)) || favorites[itemUrl];
+  if (isAdding && !favorites[itemUrl]) {
+    favorites[itemUrl] = item;
+    showConfirmation(DOM.saveConfirmed);
+  } else if (!isAdding && favorites[itemUrl]) {
+    delete favorites[itemUrl];
+    showConfirmation(DOM.removeConfirmed);
+  }
+  const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
+  if (iconElement) {
+    iconElement.classList.toggle('far', !isAdding);
+    iconElement.classList.toggle('fas', isAdding);
+    iconElement.title = isAdding ? 'Remove from Favorites' : 'Add to Favorites';
+  }
+  localStorage.setItem('nasaFavorites', JSON.stringify(favorites));
+  if (!isAdding) updateDOM('favorites');
 }
 
 // Add result to Favorites
@@ -169,10 +174,10 @@ function saveFavorite(itemUrl) {
     if (item.url.includes(itemUrl)) {
       if (!favorites[itemUrl]) {
         favorites[itemUrl] = item;
-        showSaveConfirmation();
+        showConfirmation(DOM.saveConfirmed);
       } else {
         delete favorites[itemUrl];
-        showRemoveConfirmation();
+        showConfirmation(DOM.removeConfirmed);
       }
       const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
       if (iconElement) {
@@ -197,7 +202,7 @@ function removeFavorite(itemUrl) {
       iconElement.classList.replace('fas', 'far');
       iconElement.title = 'Add to Favorites';
     }
-    showRemoveConfirmation();
+    showConfirmation(DOM.removeConfirmed);
     // Set Favorites in localStorage
     localStorage.setItem('nasaFavorites', JSON.stringify(favorites));
     updateDOM('favorites');
