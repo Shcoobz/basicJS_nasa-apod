@@ -1,4 +1,10 @@
-// DOM Elements Object
+const RESULTS_COUNT = 10;
+const MESSAGE_ADDED = 'ADDED!';
+const MESSAGE_REMOVED = 'DELETED!';
+
+let resultsArray = [];
+let favorites = {};
+
 const DOM = {
   resultsNav: document.getElementById('resultsNav'),
   favoritesNav: document.getElementById('favoritesNav'),
@@ -8,18 +14,11 @@ const DOM = {
   loader: document.querySelector('.loader'),
 };
 
-// NASA API Configurations
 const NASA_API = {
-  count: 10,
+  count: RESULTS_COUNT,
   apiKey: 'DEMO_KEY',
-  apiUrl: `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&count=10`,
+  apiUrl: `https://api.nasa.gov/planetary/apod?api_key=${NASA_API.apiKey}&count=${RESULTS_COUNT}`,
 };
-
-const MESSAGE_ADDED = 'ADDED!';
-const MESSAGE_REMOVED = 'DELETED!';
-
-let resultsArray = [];
-let favorites = {};
 
 function showContent(page) {
   window.scrollTo({ top: 0, behavior: 'instant' });
@@ -30,6 +29,7 @@ function showContent(page) {
 
 function createMediaContainer(result) {
   let mediaContainer;
+
   if (result.media_type === 'image') {
     mediaContainer = document.createElement('a');
     mediaContainer.href = result.hdurl;
@@ -37,6 +37,7 @@ function createMediaContainer(result) {
     mediaContainer.target = '_blank';
 
     const image = document.createElement('img');
+
     image.src = result.url;
     image.alt = 'NASA Picture of the Day';
     image.loading = 'lazy';
@@ -77,12 +78,13 @@ function createCardTitle(result) {
 function createSaveText(result, page) {
   const saveText = document.createElement('span');
   saveText.classList.add('clickable');
+
   saveText.innerHTML =
     page === 'results'
       ? `<i class="far fa-heart clickable" data-url="${result.url}" title="Add to Favorites"></i>`
       : `<i class="fas fa-heart clickable" data-url="${result.url}" title="Remove from Favorites"></i>`;
-  saveText.onclick = () =>
-    page === 'results' ? saveFavorite(result.url) : removeFavorite(result.url);
+
+  saveText.onclick = () => toggleFavorite(result.url);
 
   return saveText;
 }
@@ -171,69 +173,38 @@ function showConfirmation(message) {
   }, 2000);
 }
 
-function manageFavorites(itemUrl, isAdding) {
-  const item =
-    resultsArray.find((item) => item.url.includes(itemUrl)) || favorites[itemUrl];
-  if (isAdding && !favorites[itemUrl]) {
-    favorites[itemUrl] = item;
-    showConfirmation(MESSAGE_ADDED);
-  } else if (!isAdding && favorites[itemUrl]) {
+function toggleFavorite(itemUrl) {
+  const isAdding = !favorites[itemUrl];
+
+  if (isAdding) {
+    const itemToAdd = resultsArray.find((item) => item.url.includes(itemUrl));
+
+    if (itemToAdd) {
+      favorites[itemUrl] = itemToAdd;
+      showConfirmation(MESSAGE_ADDED);
+    }
+  } else {
     delete favorites[itemUrl];
     showConfirmation(MESSAGE_REMOVED);
   }
 
+  updateFavoriteIcon(itemUrl, isAdding);
+  localStorage.setItem('nasaFavorites', JSON.stringify(favorites));
+
+  const isFavoritesPageVisible = !DOM.favoritesNav.classList.contains('hidden');
+
+  if (!isAdding && isFavoritesPageVisible) {
+    updateDOM('favorites');
+  }
+}
+
+function updateFavoriteIcon(itemUrl, isAdding) {
   const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
 
   if (iconElement) {
     iconElement.classList.toggle('far', !isAdding);
     iconElement.classList.toggle('fas', isAdding);
     iconElement.title = isAdding ? 'Remove from Favorites' : 'Add to Favorites';
-  }
-
-  localStorage.setItem('nasaFavorites', JSON.stringify(favorites));
-
-  if (!isAdding) updateDOM('favorites');
-}
-
-// Add result to Favorites
-function saveFavorite(itemUrl) {
-  // Loop through Results Array to select Favorite
-  resultsArray.forEach((item) => {
-    if (item.url.includes(itemUrl)) {
-      if (!favorites[itemUrl]) {
-        favorites[itemUrl] = item;
-        showConfirmation(MESSAGE_ADDED);
-      } else {
-        delete favorites[itemUrl];
-        showConfirmation(MESSAGE_REMOVED);
-      }
-      const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
-      if (iconElement) {
-        iconElement.classList.toggle('far');
-        iconElement.classList.toggle('fas');
-        iconElement.title = favorites[itemUrl]
-          ? 'Remove from Favorites'
-          : 'Add to Favorites';
-      }
-      // Set Favorites in localStorage
-      localStorage.setItem('nasaFavorites', JSON.stringify(favorites));
-    }
-  });
-}
-
-// Remove item from Favorites
-function removeFavorite(itemUrl) {
-  if (favorites[itemUrl]) {
-    delete favorites[itemUrl];
-    const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
-    if (iconElement) {
-      iconElement.classList.replace('fas', 'far');
-      iconElement.title = 'Add to Favorites';
-    }
-    showConfirmation(MESSAGE_REMOVED);
-    // Set Favorites in localStorage
-    localStorage.setItem('nasaFavorites', JSON.stringify(favorites));
-    updateDOM('favorites');
   }
 }
 
@@ -253,4 +224,4 @@ function init() {
   getNasaPictures();
 }
 
-// init();
+init();
