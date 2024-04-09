@@ -156,18 +156,6 @@ function updateDOM(page) {
   showContent(page);
 }
 
-async function getNasaPictures() {
-  DOM.loader.classList.remove('hidden');
-
-  try {
-    const response = await fetch(NASA_API.apiUrl);
-    resultsArray = await response.json();
-    updateDOM('results');
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 function showConfirmation(confirmationElement) {
   confirmationElement.hidden = false;
   setTimeout(() => {
@@ -237,5 +225,20 @@ function removeFavorite(itemUrl) {
   }
 }
 
-// On Load
-// getNasaPictures();
+async function getNasaPictures() {
+  DOM.loader.classList.remove('hidden');
+
+  try {
+    const response = await fetch(NASA_API.apiUrl);
+    resultsArray = await response.json();
+    updateDOM('results');
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function init() {
+  getNasaPictures();
+}
+
+// init();
