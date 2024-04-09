@@ -15,6 +15,9 @@ const NASA_API = {
   apiUrl: `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&count=10`,
 };
 
+const MESSAGE_ADDED = 'ADDED!';
+const MESSAGE_REMOVED = 'DELETED!';
+
 let resultsArray = [];
 let favorites = {};
 
@@ -156,8 +159,13 @@ function updateDOM(page) {
   showContent(page);
 }
 
-function showConfirmation(confirmationElement) {
+function showConfirmation(message) {
+  const confirmationElement = document.querySelector('.confirmation-message');
+  const confirmationText = document.getElementById('confirmationText');
+
+  confirmationText.textContent = message;
   confirmationElement.hidden = false;
+
   setTimeout(() => {
     confirmationElement.hidden = true;
   }, 2000);
@@ -168,18 +176,22 @@ function manageFavorites(itemUrl, isAdding) {
     resultsArray.find((item) => item.url.includes(itemUrl)) || favorites[itemUrl];
   if (isAdding && !favorites[itemUrl]) {
     favorites[itemUrl] = item;
-    showConfirmation(DOM.saveConfirmed);
+    showConfirmation(MESSAGE_ADDED);
   } else if (!isAdding && favorites[itemUrl]) {
     delete favorites[itemUrl];
-    showConfirmation(DOM.removeConfirmed);
+    showConfirmation(MESSAGE_REMOVED);
   }
+
   const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
+
   if (iconElement) {
     iconElement.classList.toggle('far', !isAdding);
     iconElement.classList.toggle('fas', isAdding);
     iconElement.title = isAdding ? 'Remove from Favorites' : 'Add to Favorites';
   }
+
   localStorage.setItem('nasaFavorites', JSON.stringify(favorites));
+
   if (!isAdding) updateDOM('favorites');
 }
 
@@ -190,10 +202,10 @@ function saveFavorite(itemUrl) {
     if (item.url.includes(itemUrl)) {
       if (!favorites[itemUrl]) {
         favorites[itemUrl] = item;
-        showConfirmation(DOM.saveConfirmed);
+        showConfirmation(MESSAGE_ADDED);
       } else {
         delete favorites[itemUrl];
-        showConfirmation(DOM.removeConfirmed);
+        showConfirmation(MESSAGE_REMOVED);
       }
       const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
       if (iconElement) {
@@ -218,7 +230,7 @@ function removeFavorite(itemUrl) {
       iconElement.classList.replace('fas', 'far');
       iconElement.title = 'Add to Favorites';
     }
-    showConfirmation(DOM.removeConfirmed);
+    showConfirmation(MESSAGE_REMOVED);
     // Set Favorites in localStorage
     localStorage.setItem('nasaFavorites', JSON.stringify(favorites));
     updateDOM('favorites');

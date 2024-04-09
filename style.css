@@ -139,9 +139,8 @@ body {
   padding: 20px 0;
 }
 
-/* Save Confirmation */
-.save-confirmed,
-.remove-confirmed {
+/* Confirmation */
+.confirmation-message {
   background: white;
   padding: 8px 16px;
   border-radius: 5px;
