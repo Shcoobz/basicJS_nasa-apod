@@ -1,10 +1,25 @@
+/**
+ * @fileOverview Script to fetch and display NASA's Picture of the Day using NASA API. Allows users to view images, mark them as favorites, and toggle between all images and favorites.
+ */
+
+/** @const {number} RESULTS_COUNT - The number of results to fetch from the NASA API. */
 const RESULTS_COUNT = 10;
+
+/** @const {string} MESSAGE_ADDED - Message displayed when an item is added to favorites. */
 const MESSAGE_ADDED = 'ADDED!';
+
+/** @const {string} MESSAGE_REMOVED - Message displayed when an item is removed from favorites. */
 const MESSAGE_REMOVED = 'DELETED!';
 
-let resultsArray = [];
+/** @type {Array<Object>} results - Stores the results fetched from the NASA API. */
+let results = [];
+
+/** @type {Object} favorites - Stores the user's favorite images/videos. */
 let favorites = {};
 
+/**
+ * @type {Object} DOM - Cache of DOM elements used in the script to avoid repeated DOM queries.
+ */
 const DOM = {
   resultsNav: document.getElementById('resultsNav'),
   favoritesNav: document.getElementById('favoritesNav'),
@@ -14,6 +29,9 @@ const DOM = {
   loader: document.querySelector('.loader'),
 };
 
+/**
+ * @type {Object} NASA_API - Configuration for NASA API requests.
+ */
 const NASA_API = {
   count: RESULTS_COUNT,
   apiKey: 'DEMO_KEY',
@@ -21,6 +39,10 @@ const NASA_API = {
 
 NASA_API.apiUrl = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API.apiKey}&count=${NASA_API.count}`;
 
+/**
+ * Toggles the display of content based on the selected page.
+ * @param {string} page - The page to display ('results' or 'favorites').
+ */
 function showContent(page) {
   window.scrollTo({ top: 0, behavior: 'instant' });
   DOM.resultsNav.classList.toggle('hidden', page !== 'results');
@@ -28,6 +50,11 @@ function showContent(page) {
   DOM.loader.classList.add('hidden');
 }
 
+/**
+ * Creates a container for the media element (image or video) from the result.
+ * @param {Object} result - The result object containing media information.
+ * @returns {HTMLElement} - The media container element.
+ */
 function createMediaContainer(result) {
   let mediaContainer;
 
@@ -56,6 +83,12 @@ function createMediaContainer(result) {
   return mediaContainer;
 }
 
+/**
+ * Creates the container for the title and the favorite icon.
+ * @param {Object} result - The result object.
+ * @param {string} page - The current page.
+ * @returns {HTMLElement} - The title and icon container element.
+ */
 function createTitleAndIconContainer(result, page) {
   const titleAndIconContainer = document.createElement('div');
   titleAndIconContainer.classList.add('title-icon-container');
@@ -68,6 +101,11 @@ function createTitleAndIconContainer(result, page) {
   return titleAndIconContainer;
 }
 
+/**
+ * Creates the title element for a card.
+ * @param {Object} result - The result object.
+ * @returns {HTMLElement} - The title element.
+ */
 function createCardTitle(result) {
   const cardTitle = document.createElement('h5');
   cardTitle.classList.add('card-title');
@@ -76,6 +114,12 @@ function createCardTitle(result) {
   return cardTitle;
 }
 
+/**
+ * Creates the save text element, which includes the favorite icon.
+ * @param {Object} result - The result object.
+ * @param {string} page - The current page.
+ * @returns {HTMLElement} - The save text element.
+ */
 function createSaveText(result, page) {
   const saveText = document.createElement('span');
   saveText.classList.add('clickable');
@@ -90,6 +134,11 @@ function createSaveText(result, page) {
   return saveText;
 }
 
+/**
+ * Creates the text element for a card, usually containing the description.
+ * @param {Object} result - The result object.
+ * @returns {HTMLElement} - The text element.
+ */
 function createCardText(result) {
   const cardText = document.createElement('p');
   cardText.textContent = result.explanation;
@@ -97,6 +146,11 @@ function createCardText(result) {
   return cardText;
 }
 
+/**
+ * Creates the muted text element, usually containing copyright and date information.
+ * @param {Object} result - The result object.
+ * @returns {HTMLElement} - The text-muted element.
+ */
 function createTextMuted(result) {
   const date = document.createElement('strong');
   date.textContent = result.date;
@@ -111,6 +165,12 @@ function createTextMuted(result) {
   return textMuted;
 }
 
+/**
+ * Creates the body of a card, containing the title, icons, text, and muted text.
+ * @param {Object} result - The result object.
+ * @param {string} page - The current page.
+ * @returns {HTMLElement} - The card body element.
+ */
 function createCardBody(result, page) {
   const cardBody = document.createElement('div');
   cardBody.classList.add('card-body');
@@ -124,13 +184,23 @@ function createCardBody(result, page) {
   return cardBody;
 }
 
+/**
+ * Appends media and body elements to a card and then to the images container.
+ * @param {HTMLElement} card - The card element.
+ * @param {HTMLElement} mediaContainer - The media container element.
+ * @param {HTMLElement} cardBody - The card body element.
+ */
 function appendCardElements(card, mediaContainer, cardBody) {
   card.append(mediaContainer, cardBody);
   DOM.imagesContainer.appendChild(card);
 }
 
+/**
+ * Creates and appends DOM nodes for each result in the current array.
+ * @param {string} page - The current page.
+ */
 function createDOMNodes(page) {
-  const currentArray = page === 'results' ? resultsArray : Object.values(favorites);
+  const currentArray = page === 'results' ? results : Object.values(favorites);
 
   currentArray.forEach((result) => {
     const card = document.createElement('div');
@@ -143,6 +213,10 @@ function createDOMNodes(page) {
   });
 }
 
+/**
+ * Updates the DOM with new content based on the current page.
+ * @param {string} page - The current page.
+ */
 function updateDOM(page) {
   if (localStorage.getItem('nasaFavorites')) {
     favorites = JSON.parse(localStorage.getItem('nasaFavorites'));
@@ -162,6 +236,10 @@ function updateDOM(page) {
   showContent(page);
 }
 
+/**
+ * Displays a confirmation message.
+ * @param {string} message - The message to display.
+ */
 function showConfirmation(message) {
   const confirmationElement = document.querySelector('.confirmation-message');
   const confirmationText = document.getElementById('confirmationText');
@@ -174,11 +252,30 @@ function showConfirmation(message) {
   }, 2000);
 }
 
+/**
+ * Updates the favorite icon based on whether an item is being added or removed from favorites.
+ * @param {string} itemUrl - The URL of the item.
+ * @param {boolean} isAdding - True if the item is being added, false if removed.
+ */
+function updateFavoriteIcon(itemUrl, isAdding) {
+  const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
+
+  if (iconElement) {
+    iconElement.classList.toggle('far', !isAdding);
+    iconElement.classList.toggle('fas', isAdding);
+    iconElement.title = isAdding ? 'Remove from Favorites' : 'Add to Favorites';
+  }
+}
+
+/**
+ * Toggles an item as a favorite, adding or removing it from the favorites object.
+ * @param {string} itemUrl - The URL of the item to toggle.
+ */
 function toggleFavorite(itemUrl) {
   const isAdding = !favorites[itemUrl];
 
   if (isAdding) {
-    const itemToAdd = resultsArray.find((item) => item.url.includes(itemUrl));
+    const itemToAdd = results.find((item) => item.url.includes(itemUrl));
 
     if (itemToAdd) {
       favorites[itemUrl] = itemToAdd;
@@ -199,28 +296,24 @@ function toggleFavorite(itemUrl) {
   }
 }
 
-function updateFavoriteIcon(itemUrl, isAdding) {
-  const iconElement = document.querySelector(`.fa-heart[data-url="${itemUrl}"]`);
-
-  if (iconElement) {
-    iconElement.classList.toggle('far', !isAdding);
-    iconElement.classList.toggle('fas', isAdding);
-    iconElement.title = isAdding ? 'Remove from Favorites' : 'Add to Favorites';
-  }
-}
-
+/**
+ * Fetches pictures from the NASA API and updates the DOM with the results.
+ */
 async function getNasaPictures() {
   DOM.loader.classList.remove('hidden');
 
   try {
     const response = await fetch(NASA_API.apiUrl);
-    resultsArray = await response.json();
+    results = await response.json();
     updateDOM('results');
   } catch (error) {
     console.log(error);
   }
 }
 
+/**
+ * Initializes the application by fetching initial pictures.
+ */
 function init() {
   getNasaPictures();
 }
