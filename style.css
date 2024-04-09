@@ -128,6 +128,17 @@ body {
   width: 100%;
 }
 
+/* Favorites Msg */
+.no-favorites-message {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--primary-main-color);
+  width: 100%;
+  text-align: center;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
 /* Save Confirmation */
 .save-confirmed,
 .remove-confirmed {

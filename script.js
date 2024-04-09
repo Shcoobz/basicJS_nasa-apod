@@ -111,88 +111,6 @@ function createDOMNodes(page) {
   });
 }
 
-// function createDOMNodes(page) {
-//   const currentArray = page === 'results' ? resultsArray : Object.values(favorites);
-
-//   currentArray.forEach((result) => {
-//     // Card Container
-//     const card = document.createElement('div');
-//     card.classList.add('card');
-
-//     let mediaContainer;
-//     if (result.media_type === 'image') {
-//       mediaContainer = document.createElement('a');
-//       mediaContainer.href = result.hdurl;
-//       mediaContainer.title = 'View Full Image';
-//       mediaContainer.target = '_blank';
-
-//       const image = document.createElement('img');
-//       image.src = result.url;
-//       image.alt = 'NASA Picture of the Day';
-//       image.loading = 'lazy';
-//       image.classList.add('card-img-top');
-//       mediaContainer.appendChild(image);
-//     } else if (result.media_type === 'video') {
-//       mediaContainer = document.createElement('iframe');
-//       mediaContainer.src = result.url;
-//       mediaContainer.title = 'NASA Video of the Day';
-//       mediaContainer.classList.add('card-img-top');
-//       mediaContainer.classList.add('video-frame');
-//       mediaContainer.style.border = 'none';
-//       mediaContainer.style.width = '100%';
-//       mediaContainer.style.height = '500px';
-//     }
-
-//     // Card Body
-//     const cardBody = document.createElement('div');
-//     cardBody.classList.add('card-body');
-
-//     // Flex container for title and icon
-//     const titleAndIconContainer = document.createElement('div');
-//     titleAndIconContainer.classList.add('title-icon-container');
-
-//     // Card Title
-//     const cardTitle = document.createElement('h5');
-//     cardTitle.classList.add('card-title');
-//     cardTitle.textContent = result.title;
-
-//     // Save Text (Heart Icon)
-//     const saveText = document.createElement('span');
-//     saveText.classList.add('clickable');
-//     if (page === 'results') {
-//       saveText.innerHTML = `<i class="far fa-heart clickable" data-url="${result.url}" title="Add to Favorites"></i>`;
-//     } else {
-//       saveText.innerHTML = `<i class="fas fa-heart clickable" data-url="${result.url}" title="Remove from Favorites"></i>`;
-//     }
-//     saveText.onclick = () => {
-//       page === 'results' ? saveFavorite(result.url) : removeFavorite(result.url);
-//     };
-
-//     // Card Text
-//     const cardText = document.createElement('p');
-//     cardText.textContent = result.explanation;
-//     // Footer Container
-//     const footer = document.createElement('small');
-//     footer.classList.add('text-muted');
-//     // Date
-//     const date = document.createElement('strong');
-//     date.textContent = result.date;
-//     // Copyright
-//     const copyrightResult = result.copyright === undefined ? '' : result.copyright;
-//     const copyright = document.createElement('span');
-//     copyright.textContent = ` ${copyrightResult}`;
-
-//     // Append
-//     footer.append(date, copyright);
-//     titleAndIconContainer.append(cardTitle, saveText);
-
-//     cardBody.append(titleAndIconContainer, cardText, footer);
-
-//     card.append(mediaContainer, cardBody);
-//     imagesContainer.appendChild(card);
-//   });
-// }
-
 //
 function updateDOM(page) {
   // Get Favorites from LocalStorage
@@ -202,7 +120,16 @@ function updateDOM(page) {
 
   imagesContainer.textContent = '';
 
-  createDOMNodes(page);
+  // Check if updating 'favorites' page and favorites is empty
+  if (page === 'favorites' && Object.keys(favorites).length === 0) {
+    const noFavoritesMessage = document.createElement('p');
+    noFavoritesMessage.textContent = 'No favorites yet!';
+    noFavoritesMessage.classList.add('no-favorites-message');
+    imagesContainer.appendChild(noFavoritesMessage);
+  } else {
+    createDOMNodes(page);
+  }
+
   showContent(page);
 }
 
