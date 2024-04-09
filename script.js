@@ -51,17 +51,27 @@ function createMediaContainer(result) {
   return mediaContainer;
 }
 
-function createCardBody(result, page) {
-  const cardBody = document.createElement('div');
-  cardBody.classList.add('card-body');
-
+function createTitleAndIconContainer(result, page) {
   const titleAndIconContainer = document.createElement('div');
   titleAndIconContainer.classList.add('title-icon-container');
 
+  const cardTitle = createCardTitle(result);
+  const saveText = createSaveText(result, page);
+
+  titleAndIconContainer.append(cardTitle, saveText);
+
+  return titleAndIconContainer;
+}
+
+function createCardTitle(result) {
   const cardTitle = document.createElement('h5');
   cardTitle.classList.add('card-title');
   cardTitle.textContent = result.title;
 
+  return cardTitle;
+}
+
+function createSaveText(result, page) {
   const saveText = document.createElement('span');
   saveText.classList.add('clickable');
   saveText.innerHTML =
@@ -71,9 +81,17 @@ function createCardBody(result, page) {
   saveText.onclick = () =>
     page === 'results' ? saveFavorite(result.url) : removeFavorite(result.url);
 
+  return saveText;
+}
+
+function createCardText(result) {
   const cardText = document.createElement('p');
   cardText.textContent = result.explanation;
 
+  return cardText;
+}
+
+function createTextMuted(result) {
   const date = document.createElement('strong');
   date.textContent = result.date;
 
@@ -84,7 +102,17 @@ function createCardBody(result, page) {
   textMuted.classList.add('text-muted');
   textMuted.append(date, copyright);
 
-  titleAndIconContainer.append(cardTitle, saveText);
+  return textMuted;
+}
+
+function createCardBody(result, page) {
+  const cardBody = document.createElement('div');
+  cardBody.classList.add('card-body');
+
+  const titleAndIconContainer = createTitleAndIconContainer(result, page);
+  const cardText = createCardText(result);
+  const textMuted = createTextMuted(result);
+
   cardBody.append(titleAndIconContainer, cardText, textMuted);
 
   return cardBody;
