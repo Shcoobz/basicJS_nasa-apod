@@ -1,4 +1,4 @@
-# basicJS_NASA APOD -> [LIVE DEMO](https://shcoobz.github.io/basicJS_nasa-apod/)
+# basicJS_NASA APOD: [LIVE DEMO](https://shcoobz.github.io/basicJS_nasa-apod/)
 
 ![Project Image](img/basicJS_nasa-apod.png)
 
