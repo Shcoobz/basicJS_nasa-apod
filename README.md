@@ -1,6 +1,6 @@
-# NASA APOD -> [LIVE DEMO](https://shcoobz.github.io/nasa-apod/)
+# basicJS_NASA APOD -> [LIVE DEMO](https://shcoobz.github.io/basicJS_nasa-apod/)
 
-![Project Image](img/nasa-apod.png)
+![Project Image](img/basicJS_nasa-apod.png)
 
 ## Summary
 
