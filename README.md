@@ -42,4 +42,4 @@ Designed to be fully responsive, NASA APOD ensures an enjoyable browsing experie
 
 _Note: This document provides an overview of NASA APOD. For detailed instructions and more information, please refer to the source code documentation._
 
-_This project has been enhanced and converted into a React-based application, which can be viewed [here](https://github.com/Shcoobz/react_nasa-apod/). The React version integrates more advanced state management and component-based architecture for improved maintainability and scalability._
+_This project has been enhanced and converted into a React-based application, which can be viewed [here](https://github.com/Shcoobz/advancedJS_nasa-apod/). The React version integrates more advanced state management and component-based architecture for improved maintainability and scalability._
